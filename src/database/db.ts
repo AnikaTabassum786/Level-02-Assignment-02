@@ -17,6 +17,17 @@ export const initDB = async () => {
         )
         `
     )
+
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS vehicles(
+    id SERIAL PRIMARY KEY,
+    vehicle_name VARCHAR(250) NOT NULL,
+    type VARCHAR(20) CHECK(type IN ('car', 'bike', 'van','SUV')),
+    registration_number VARCHAR(250)  NOT NULL UNIQUE, 
+    daily_rent_price NUMERIC(10,2) NOT NULL CHECK(daily_rent_price>0),
+    availability_status VARCHAR(20)
+
+)`)
     console.log("Database Connected")
 }
 
