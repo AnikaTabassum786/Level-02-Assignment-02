@@ -6,7 +6,8 @@ import { Roles } from "../auth/auth.const";
 
 const router= Router();
 router.post('/', auth(Roles.admin), vehicleController.createVehicle)
-router.get('/',auth(Roles.admin , Roles.customer) , vehicleController.getAllUser)
+router.get('/',auth(Roles.admin , Roles.customer) , vehicleController.getAllVehicle)
+router.get('/:vehicleId',auth(Roles.admin , Roles.customer) , vehicleController.getSingleVehicle)
 
 
 

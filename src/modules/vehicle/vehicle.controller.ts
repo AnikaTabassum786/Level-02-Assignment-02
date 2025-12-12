@@ -4,7 +4,7 @@ import { vehicleService } from "./vehicle.service"
 const createVehicle = async(req:Request, res:Response)=>{
    try{
       const result = await vehicleService.createVehicleIntoDB(req.body)
-      return res.status(200).json({
+      return res.status(201).json({
            success:true,
            message:"Vehicle created successfully",
            data: result.rows[0]
@@ -18,14 +18,24 @@ const createVehicle = async(req:Request, res:Response)=>{
    }
 }
 
-const getAllUser = async (req: Request, res: Response) => {
+const getAllVehicle = async (req: Request, res: Response) => {
    try{
     const result = await vehicleService.getAllVehicleIntoDB();
-        return res.status(201).json({
+        if(result.rows.length===0){
+         return res.status(200).json({
             success:true,
-            message:"User Created Successfully",
-            data:result
+            message:"No vehicles found",
+            data:result.rows
         })
+        }
+
+        else{
+            return res.status(200).json({
+            success:true,
+            message:"Vehicles retrieved successfully",
+            data:result.rows
+        })
+        }
    }
    catch(err:any){
      return res.status(500).json({
@@ -34,7 +44,46 @@ const getAllUser = async (req: Request, res: Response) => {
       })
    }
 }
+
+const getSingleVehicle= async(req: Request, res: Response)=>{
+  try{
+
+    const result = await vehicleService.getSingleVehicleIntoDB(req.params.vehicleId as string);
+    return res.status(200).json({
+            success:true,
+            message:"Vehicle retrieved successfully",
+            data:result.rows
+          })
+
+  //   if(result.rows.length === 0){
+  //           return res.status(200).json({
+  //           success:true,
+  //           message:"No vehicles found",
+  //           data:result.rows
+  //   })
+   
+  // }
+  //   else{
+  //           return res.status(200).json({
+  //           success:true,
+  //           message:"Vehicle retrieved successfully",
+  //           data:result.rows[0]
+  //       })
+  //       }
+}
+
+
+catch(err:any){
+    res.status(500).json({
+        success:false,
+        message:err.message
+    })
+  }
+}
+
+
 export const vehicleController={
 createVehicle,
-getAllUser
+getAllVehicle,
+getSingleVehicle
 }
