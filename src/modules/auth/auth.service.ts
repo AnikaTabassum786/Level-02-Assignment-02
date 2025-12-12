@@ -6,13 +6,29 @@ export  const secret = 'KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30';
 const signupUserIntoDB = async (payload: Record<string, unknown>) => {
     const { name, email, password, role,phone } = payload;
 
-    console.log(password)
+    // console.log(password)
    
-
+    
+     if(!name){
+        throw new Error("Name is required")
+     }
+     if(!email){
+        throw new Error("Email is required")
+     }
+     if(!password){
+        throw new Error("Password is required")
+     }
+     if((password as string).length<6){
+         throw new Error("Password must be 6 characters")
+     }
+     if(!phone){
+        throw new Error("Phone is required")
+     }
+     const userEmail = (email as string).toLowerCase();
     const hashPassword = await bcrypt.hash(password as string, 12)
     const result = await pool.query(`
         INSERT INTO users(name,email,password,role,phone) VALUES($1,$2,$3,$4,$5) RETURNING *
-        `, [name, email, hashPassword,role,phone])
+        `, [name, userEmail, hashPassword,role,phone])
 
     delete result.rows[0].password
     return result;
@@ -20,10 +36,10 @@ const signupUserIntoDB = async (payload: Record<string, unknown>) => {
 
 
 const loginUserIntoDB = async(email:string, password:string)=>{
-
+        const userEmail = (email as string).toLowerCase()
         const user = await pool.query(`
         SELECT * FROM users WHERE email = $1
-        `,[email])
+        `,[userEmail])
 
         const matchPassword = await bcrypt.compare(password, user.rows[0].password)
         
