@@ -6,5 +6,7 @@ import { userController } from "./user.controller";
 
 const router= Router();
 router.get('/', auth(Roles.admin), userController.getAllUser)
+router.delete('/:userId', auth(Roles.admin), userController.deleteUser)
+router.put('/:userId', auth(Roles.admin), userController.updateUser)
 
 export const userRoute =router
