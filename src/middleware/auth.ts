@@ -13,6 +13,7 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
         if(!token){
          throw new Error("You are not authorized")
         }
+        
         const decoded = jwt.verify(token,secret) as JwtPayload
         console.log(decoded)
 
@@ -24,6 +25,7 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
              throw new Error("User Not Found!")
         }
         req.user = decoded;
+        console.log(req.user.email,req.user.role,req.user.id)
 
         if(roles.length && !roles.includes(decoded.role)){
           throw new Error("You Are Unauthorized")
@@ -32,3 +34,5 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
     }
 }
 export default auth
+
+

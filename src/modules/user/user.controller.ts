@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { userService } from "./user.service";
+import { Roles } from "../auth/auth.const";
 
 const getAllUser = async (req: Request, res: Response) => {
     try {
@@ -47,6 +48,10 @@ const updateUser = async (req: Request, res: Response) => {
   const { name, email, phone, role  } = req.body
   try {
     const result = await userService.updateUserIntoDB(name, email, phone, role, req.params.userId as string)
+
+    console.log(req.params.userId)
+
+
     if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
