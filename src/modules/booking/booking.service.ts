@@ -3,20 +3,20 @@ import { pool } from "../../database/db";
 const createBookingIntoDB = async (payload: Record<string, unknown>) => {
 
     const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
-    
+
     const resultOfVehicle = await pool.query(
         `SELECT vehicle_name,daily_rent_price FROM vehicles WHERE ID =$1`, [vehicle_id]
     )
 
-    if(resultOfVehicle.rows.length === 0 ){
-        throw new Error ("Vehicle not found")
+    if (resultOfVehicle.rows.length === 0) {
+        throw new Error("Vehicle not found")
     }
     const { daily_rent_price } = resultOfVehicle.rows[0]
-  
-    const startDate = new Date(rent_start_date as string) ;
+
+    const startDate = new Date(rent_start_date as string);
     const endDate = new Date(rent_end_date as string);
 
-    if(startDate >= endDate){
+    if (startDate >= endDate) {
         throw new Error("End date must be greater than start day")
     }
 
@@ -67,6 +67,44 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
 
 }
 
+const getAllBookingFromDB = async () => {
+  
+        const result = await pool.query(`
+        SELECT
+        bookings.id,bookings.customer_id,bookings.vehicle_id,bookings.rent_start_date,
+        bookings.rent_end_date,bookings.total_price,bookings.status,
+        users.name,users.email,
+        vehicles.vehicle_name,vehicles.registration_number  
+        from bookings 
+        JOIN vehicles ON 
+        bookings.vehicle_id = vehicles.id
+        JOIN users ON
+        bookings.customer_id = users.id 
+        
+            `)
+
+        const info = result.rows.map(row=>({
+            id:row.id,
+            customer_id:row.customer_id,
+            vehicle_id:row.vehicle_id,
+            rent_start_date:row.rent_start_date,
+            rent_end_date:row.rent_end_date,
+            total_price:row.total_price,
+            status:row.status,
+            customer:{
+                name:row.name,
+                email:row.email
+            },
+            vehicle:{
+                vehicle_name:row.vehicle_name,
+                registration_number:row.registration_number
+            }
+        }))
+
+        return info
+}
+
 export const bookingService = {
-    createBookingIntoDB
+    createBookingIntoDB,
+    getAllBookingFromDB
 }
