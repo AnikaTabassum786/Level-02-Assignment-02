@@ -44,13 +44,33 @@ const deleteUser = async (req: Request, res: Response) => {
     }
 }
 
+
+
 const updateUser = async (req: Request, res: Response) => {
   const { name, email, phone, role  } = req.body
+  const targetId = req.params.userId;
+  const loginUser = req.user;
+
+ 
   try {
-    const result = await userService.updateUserIntoDB(name, email, phone, role, req.params.userId as string)
 
-    console.log(req.params.userId)
+      if(loginUser?.role === 'customer' && loginUser?.id !== Number(targetId)){
+      return res.status(404).json({
+        success: false,
+        message: "You can update only your profile"
+      })
+    }
 
+    if(loginUser?.role === 'customer' &&  role!== loginUser?.role){
+     return res.status(404).json({
+        success: false,
+        message: "You can not change role"
+      })
+    }
+
+    const result = await userService.updateUserIntoDB(name, email, phone, role, targetId as string)
+
+    // console.log('sdcasd',req.params.targetId)
 
     if (result.rows.length === 0) {
       return res.status(404).json({

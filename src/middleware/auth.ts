@@ -7,18 +7,24 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
   
   console.log(roles);
     return async(req:Request,res:Response, next:NextFunction) =>{
-        const token = req.headers.authorization;
+        const authentication  = req.headers.authorization;
         
-        // console.log(token);
-        if(!token){
+        // console.log(authentication);
+        if(!authentication){
          throw new Error("You are not authorized")
+        }
+
+        const token = authentication.split(" ")[1];
+
+        if(!token){
+          throw new Error("Invalid Token")
         }
         
         const decoded = jwt.verify(token,secret) as JwtPayload
         console.log(decoded)
 
         const user = await pool.query(
-          `SELECT * FROM users WHERE email=$1`,[decoded.email]
+          `SELECT * FROM users WHERE id=$1`,[decoded.id]
         )
 
         if(user.rows.length === 0){
@@ -34,5 +40,8 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
     }
 }
 export default auth
+
+
+
 
 
