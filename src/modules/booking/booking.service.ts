@@ -104,7 +104,37 @@ const getAllBookingFromDB = async () => {
         return info
 }
 
+const getOwnBookingFromDB = async(loginId:number)=>{
+      const result = await pool.query(`
+        SELECT
+        bookings.id,bookings.vehicle_id,bookings.rent_start_date,
+        bookings.rent_end_date,bookings.total_price,bookings.status,
+        vehicles.vehicle_name,vehicles.registration_number,vehicles.type  
+        from bookings 
+        JOIN vehicles ON 
+        bookings.vehicle_id = vehicles.id
+        WHERE bookings.customer_id =$1
+        `,[loginId])
+
+        const info = result.rows.map(row=>({
+            id:row.id,
+            vehicle_id:row.vehicle_id,
+            rent_start_date:row.rent_start_date,
+            rent_end_date:row.rent_end_date,
+            total_price:row.total_price,
+            status:row.status,
+            vehicle:{
+                vehicle_name:row.vehicle_name,
+                registration_number:row.registration_number,
+                type:row.type
+            }
+        }))
+
+        return info
+}
+
 export const bookingService = {
     createBookingIntoDB,
-    getAllBookingFromDB
+    getAllBookingFromDB,
+    getOwnBookingFromDB
 }
