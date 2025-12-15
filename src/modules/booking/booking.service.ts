@@ -5,11 +5,14 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
     const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
 
     const resultOfVehicle = await pool.query(
-        `SELECT vehicle_name,daily_rent_price FROM vehicles WHERE ID =$1`, [vehicle_id]
+        `SELECT vehicle_name,daily_rent_price,availability_status FROM vehicles WHERE ID =$1`, [vehicle_id]
     )
 
     if (resultOfVehicle.rows.length === 0) {
         throw new Error("Vehicle not found")
+    }
+    if (resultOfVehicle.rows[0].availability_status !== 'available') {
+        throw new Error("Vehicle is not available now")
     }
     const { daily_rent_price } = resultOfVehicle.rows[0]
 
@@ -47,7 +50,13 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
         `, [booking.id]
     )
 
+    const updateVehicleStatus = await pool.query(`UPDATE vehicles SET availability_status= 'booked'
+    WHERE id = $1 RETURNING availability_status`, [vehicle_id])
+
+
+
     const info = result.rows[0]
+    const statusInfo =updateVehicleStatus.rows[0]
 
     return {
         id: info.id,
@@ -59,7 +68,8 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
         status: info.status,
         vehicle: {
             vehicle_name: info.vehicle_name,
-            daily_rent_price: info.daily_rent_price
+            daily_rent_price: info.daily_rent_price,
+            // availability_status:statusInfo.availability_status
         }
 
 
@@ -68,8 +78,8 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
 }
 
 const getAllBookingFromDB = async () => {
-  
-        const result = await pool.query(`
+
+    const result = await pool.query(`
         SELECT
         bookings.id,bookings.customer_id,bookings.vehicle_id,bookings.rent_start_date,
         bookings.rent_end_date,bookings.total_price,bookings.status,
@@ -83,29 +93,29 @@ const getAllBookingFromDB = async () => {
         
             `)
 
-        const info = result.rows.map(row=>({
-            id:row.id,
-            customer_id:row.customer_id,
-            vehicle_id:row.vehicle_id,
-            rent_start_date:row.rent_start_date,
-            rent_end_date:row.rent_end_date,
-            total_price:row.total_price,
-            status:row.status,
-            customer:{
-                name:row.name,
-                email:row.email
-            },
-            vehicle:{
-                vehicle_name:row.vehicle_name,
-                registration_number:row.registration_number
-            }
-        }))
+    const info = result.rows.map(row => ({
+        id: row.id,
+        customer_id: row.customer_id,
+        vehicle_id: row.vehicle_id,
+        rent_start_date: row.rent_start_date,
+        rent_end_date: row.rent_end_date,
+        total_price: row.total_price,
+        status: row.status,
+        customer: {
+            name: row.name,
+            email: row.email
+        },
+        vehicle: {
+            vehicle_name: row.vehicle_name,
+            registration_number: row.registration_number
+        }
+    }))
 
-        return info
+    return info
 }
 
-const getOwnBookingFromDB = async(loginId:number)=>{
-      const result = await pool.query(`
+const getOwnBookingFromDB = async (loginId: number) => {
+    const result = await pool.query(`
         SELECT
         bookings.id,bookings.vehicle_id,bookings.rent_start_date,
         bookings.rent_end_date,bookings.total_price,bookings.status,
@@ -114,23 +124,23 @@ const getOwnBookingFromDB = async(loginId:number)=>{
         JOIN vehicles ON 
         bookings.vehicle_id = vehicles.id
         WHERE bookings.customer_id =$1
-        `,[loginId])
+        `, [loginId])
 
-        const info = result.rows.map(row=>({
-            id:row.id,
-            vehicle_id:row.vehicle_id,
-            rent_start_date:row.rent_start_date,
-            rent_end_date:row.rent_end_date,
-            total_price:row.total_price,
-            status:row.status,
-            vehicle:{
-                vehicle_name:row.vehicle_name,
-                registration_number:row.registration_number,
-                type:row.type
-            }
-        }))
+    const info = result.rows.map(row => ({
+        id: row.id,
+        vehicle_id: row.vehicle_id,
+        rent_start_date: row.rent_start_date,
+        rent_end_date: row.rent_end_date,
+        total_price: row.total_price,
+        status: row.status,
+        vehicle: {
+            vehicle_name: row.vehicle_name,
+            registration_number: row.registration_number,
+            type: row.type
+        }
+    }))
 
-        return info
+    return info
 }
 
 export const bookingService = {
