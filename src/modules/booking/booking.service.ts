@@ -40,8 +40,10 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
     const result = await pool.query(
         `
         SELECT
-        bookings.id,bookings.customer_id,bookings.vehicle_id,bookings.rent_start_date,
-        bookings.rent_end_date,bookings.total_price,bookings.status, vehicles.vehicle_name,
+        bookings.id,bookings.customer_id,bookings.vehicle_id,
+        TO_CHAR(bookings.rent_start_date, 'YYYY-MM-DD') AS rent_start_date,
+        TO_CHAR(bookings.rent_end_date, 'YYYY-MM-DD') AS rent_end_date,
+        bookings.total_price,bookings.status, vehicles.vehicle_name,
         vehicles.daily_rent_price 
         from bookings 
         JOIN vehicles ON 
@@ -56,7 +58,7 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
 
 
     const info = result.rows[0]
-    const statusInfo =updateVehicleStatus.rows[0]
+    const statusInfo = updateVehicleStatus.rows[0]
 
     return {
         id: info.id,
@@ -68,7 +70,7 @@ const createBookingIntoDB = async (payload: Record<string, unknown>) => {
         status: info.status,
         vehicle: {
             vehicle_name: info.vehicle_name,
-            daily_rent_price: info.daily_rent_price,
+            daily_rent_price: Number(info.daily_rent_price),
             // availability_status:statusInfo.availability_status
         }
 
@@ -81,8 +83,10 @@ const getAllBookingFromDB = async () => {
 
     const result = await pool.query(`
         SELECT
-        bookings.id,bookings.customer_id,bookings.vehicle_id,bookings.rent_start_date,
-        bookings.rent_end_date,bookings.total_price,bookings.status,
+        bookings.id,bookings.customer_id,bookings.vehicle_id,
+        TO_CHAR(bookings.rent_start_date, 'YYYY-MM-DD') AS rent_start_date,
+        TO_CHAR(bookings.rent_end_date, 'YYYY-MM-DD') AS rent_end_date,
+        bookings.total_price,bookings.status,
         users.name,users.email,
         vehicles.vehicle_name,vehicles.registration_number  
         from bookings 
@@ -99,7 +103,7 @@ const getAllBookingFromDB = async () => {
         vehicle_id: row.vehicle_id,
         rent_start_date: row.rent_start_date,
         rent_end_date: row.rent_end_date,
-        total_price: row.total_price,
+        total_price: Number(row.total_price),
         status: row.status,
         customer: {
             name: row.name,
@@ -117,8 +121,10 @@ const getAllBookingFromDB = async () => {
 const getOwnBookingFromDB = async (loginId: number) => {
     const result = await pool.query(`
         SELECT
-        bookings.id,bookings.vehicle_id,bookings.rent_start_date,
-        bookings.rent_end_date,bookings.total_price,bookings.status,
+        bookings.id,bookings.vehicle_id,
+        TO_CHAR(bookings.rent_start_date, 'YYYY-MM-DD') AS rent_start_date,
+        TO_CHAR(bookings.rent_end_date, 'YYYY-MM-DD') AS rent_end_date,
+        bookings.total_price,bookings.status,
         vehicles.vehicle_name,vehicles.registration_number,vehicles.type  
         from bookings 
         JOIN vehicles ON 
@@ -131,7 +137,7 @@ const getOwnBookingFromDB = async (loginId: number) => {
         vehicle_id: row.vehicle_id,
         rent_start_date: row.rent_start_date,
         rent_end_date: row.rent_end_date,
-        total_price: row.total_price,
+        total_price: Number(row.total_price),
         status: row.status,
         vehicle: {
             vehicle_name: row.vehicle_name,
@@ -143,11 +149,11 @@ const getOwnBookingFromDB = async (loginId: number) => {
     return info
 }
 
-const updateBookingByAdminIntoDB=async(status:string, bookingId:string)=>{
+const updateBookingByAdminIntoDB = async (status: string, bookingId: string) => {
 
-   const result = await pool.query(`UPDATE bookings SET status = 'cancelled'
+    const result = await pool.query(`UPDATE bookings SET status = 'cancelled'
     WHERE id = $1 RETURNING *
-    `,[bookingId])
+    `, [bookingId])
 
     return result
 }
