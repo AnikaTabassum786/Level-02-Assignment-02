@@ -143,8 +143,18 @@ const getOwnBookingFromDB = async (loginId: number) => {
     return info
 }
 
+const updateBookingByAdminIntoDB=async(status:string, bookingId:string)=>{
+
+   const result = await pool.query(`UPDATE bookings SET status = 'cancelled'
+    WHERE id = $1 RETURNING *
+    `,[bookingId])
+
+    return result
+}
+
 export const bookingService = {
     createBookingIntoDB,
     getAllBookingFromDB,
-    getOwnBookingFromDB
+    getOwnBookingFromDB,
+    updateBookingByAdminIntoDB
 }

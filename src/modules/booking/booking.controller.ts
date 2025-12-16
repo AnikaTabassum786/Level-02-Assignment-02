@@ -42,13 +42,13 @@ const getOwnBooking = async (req: Request, res: Response) => {
         const loginUser = req.user;
         const result = await bookingService.getOwnBookingFromDB(loginUser?.id)
 
-       if(result.length === 0){
+        if (result.length === 0) {
             return res.status(200).json({
-            success: true,
-            message: "No bookings yet",
-            data: result
-        })
-       }
+                success: true,
+                message: "No bookings yet",
+                data: result
+            })
+        }
         return res.status(200).json({
             success: true,
             message: "Your bookings retrieved successfully",
@@ -64,9 +64,29 @@ const getOwnBooking = async (req: Request, res: Response) => {
 
 }
 
+const updateBookingStatusByAdmin = async (req: Request, res: Response) => {
+    try {
+        const { status} = req.body;
+        const result = await bookingService.updateBookingByAdminIntoDB(status,req.params.bookingId as string)
+
+         return res.status(200).json({
+            success: true,
+            message: "Booking cancelled successfully",
+            data: result
+        })
+    }
+    catch (err: any) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        })
+    }
+}
+
 export const bookingController = {
     createBooking,
     getAllBooking,
-    getOwnBooking
+    getOwnBooking,
+    updateBookingStatusByAdmin
 }
 

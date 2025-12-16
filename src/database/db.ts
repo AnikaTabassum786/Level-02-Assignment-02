@@ -13,7 +13,7 @@ export const initDB = async () => {
         email VARCHAR(150) UNIQUE NOT NULL,
         password TEXT NOT NULL,
         phone VARCHAR(15) NOT NULL,
-        role VARCHAR(100)
+        role VARCHAR(100) CHECK(role IN('admin','customer'))
         )
         `
     )
@@ -24,7 +24,7 @@ export const initDB = async () => {
     vehicle_name VARCHAR(250) NOT NULL,
     type VARCHAR(20) CHECK(type IN ('car', 'bike', 'van','SUV')),
     registration_number VARCHAR(250)  NOT NULL UNIQUE, 
-    daily_rent_price NUMERIC NOT NULL CHECK(daily_rent_price>0),
+    daily_rent_price INTEGER NOT NULL CHECK(daily_rent_price>0),
     availability_status VARCHAR(20) CHECK(availability_status IN ('available', 'booked'))
 
 )`)   
