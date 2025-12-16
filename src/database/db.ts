@@ -41,6 +41,6 @@ export const initDB = async () => {
         status VARCHAR(20) CHECK(status IN ('active', 'cancelled', 'returned'))
         )
         `)
-    console.log("Database Connected")
+    // console.log("Database Connected")
 }
 

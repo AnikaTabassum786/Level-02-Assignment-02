@@ -61,15 +61,47 @@ const getOwnBooking = async (req: Request, res: Response) => {
             message: err.message
         })
     }
-
 }
 
 const updateBookingStatusByAdmin = async (req: Request, res: Response) => {
     try {
-        const { status} = req.body;
-        const result = await bookingService.updateBookingByAdminIntoDB(status,req.params.bookingId as string)
+        const { status } = req.body;
+        if(status !== 'returned'){
+           return res.status(400).json({
+            success: false,
+            message: "Admin can mark booking as returned",
+        })
+        }
 
-         return res.status(200).json({
+        const result = await bookingService.updateBookingByAdminIntoDB( req.params.bookingId as string)
+
+        return res.status(200).json({
+            success: true,
+            message: "Booking marked as returned. Vehicle is now available",
+            data: result
+        })
+    }
+    catch (err: any) {
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        })
+    }
+}
+
+const updateBookingStatusByCustomer= async(req: Request, res: Response)=>{
+     try {
+        const { status } = req.body;
+        if(status !== 'cancelled'){
+           return res.status(400).json({
+            success: false,
+            message: "Customer can mark booking as cancelled",
+        })
+        }
+
+        const result = await bookingService.updateBookingByCustomerIntoDB( req.params.bookingId as string)
+
+        return res.status(200).json({
             success: true,
             message: "Booking cancelled successfully",
             data: result
@@ -87,6 +119,7 @@ export const bookingController = {
     createBooking,
     getAllBooking,
     getOwnBooking,
-    updateBookingStatusByAdmin
+    updateBookingStatusByAdmin,
+    updateBookingStatusByCustomer
 }
 

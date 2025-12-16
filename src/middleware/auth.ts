@@ -5,7 +5,7 @@ import { pool } from "../database/db";
 
 const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a} this is rest operator
   
-  console.log(roles);
+  // console.log(roles);
     return async(req:Request,res:Response, next:NextFunction) =>{
         const authentication  = req.headers.authorization;
         
@@ -21,7 +21,7 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
         }
         
         const decoded = jwt.verify(token,secret) as JwtPayload
-        console.log(decoded)
+        // console.log(decoded)
 
         const user = await pool.query(
           `SELECT * FROM users WHERE id=$1`,[decoded.id]
@@ -31,7 +31,7 @@ const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a
              throw new Error("User Not Found!")
         }
         req.user = decoded;
-        console.log(req.user.email,req.user.role,req.user.id)
+        // console.log(req.user.email,req.user.role,req.user.id)
 
         if(roles.length && !roles.includes(decoded.role)){
           throw new Error("You Are Unauthorized")

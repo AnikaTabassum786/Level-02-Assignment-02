@@ -149,18 +149,74 @@ const getOwnBookingFromDB = async (loginId: number) => {
     return info
 }
 
-const updateBookingByAdminIntoDB = async (status: string, bookingId: string) => {
+const updateBookingByAdminIntoDB = async ( bookingId: string) => {
 
-    const result = await pool.query(`UPDATE bookings SET status = 'cancelled'
-    WHERE id = $1 RETURNING *
+    const bookingResult = await pool.query(`UPDATE bookings SET status = 'returned'
+    WHERE id = $1 RETURNING 
+    id,
+    customer_id,
+    vehicle_id,
+    TO_CHAR(bookings.rent_start_date, 'YYYY-MM-DD') AS rent_start_date,
+    TO_CHAR(bookings.rent_end_date, 'YYYY-MM-DD') AS rent_end_date,
+    total_price,status
     `, [bookingId])
 
-    return result
+    if(bookingResult.rows.length === 0){
+        throw new Error ('Booking not found')
+    }
+
+    const booking = bookingResult.rows[0];
+    booking.total_price = Number(booking.total_price)
+
+    const vehicleResult = await pool.query(`
+        UPDATE vehicles SET availability_status = 'available' 
+        WHERE id = $1 RETURNING availability_status
+        `,[booking.vehicle_id])
+
+    return {
+        ...booking,
+        vehicle:{
+            availability_status: vehicleResult.rows[0].availability_status
+        }
+    }
+}
+
+const updateBookingByCustomerIntoDB=async( bookingId: string)=>{
+const bookingResult = await pool.query(`UPDATE bookings SET status = 'cancelled'
+    WHERE id = $1 RETURNING 
+    id,
+    customer_id,
+    vehicle_id,
+    TO_CHAR(bookings.rent_start_date, 'YYYY-MM-DD') AS rent_start_date,
+    TO_CHAR(bookings.rent_end_date, 'YYYY-MM-DD') AS rent_end_date,
+    total_price,status
+    `, [bookingId])
+
+    if(bookingResult.rows.length === 0){
+        throw new Error ('Booking not found')
+    }
+
+    const booking = bookingResult.rows[0];
+    booking.total_price = Number(booking.total_price)
+
+    const vehicleResult = await pool.query(`
+        UPDATE vehicles SET availability_status = 'available' 
+        WHERE id = $1 RETURNING availability_status
+        `,[booking.vehicle_id])
+
+    return {
+        ...booking,
+        // vehicle:{
+        //     availability_status: vehicleResult.rows[0].availability_status
+        // }
+    }
 }
 
 export const bookingService = {
     createBookingIntoDB,
     getAllBookingFromDB,
     getOwnBookingFromDB,
-    updateBookingByAdminIntoDB
+    updateBookingByAdminIntoDB,
+    updateBookingByCustomerIntoDB
+
 }
