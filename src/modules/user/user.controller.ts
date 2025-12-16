@@ -51,18 +51,17 @@ const updateUser = async (req: Request, res: Response) => {
   const targetId = req.params.userId;
   const loginUser = req.user;
 
- 
   try {
 
       if(loginUser?.role === 'customer' && loginUser?.id !== Number(targetId)){
-      return res.status(404).json({
+      return res.status(403).json({
         success: false,
         message: "You can update only your profile"
       })
     }
 
     if(loginUser?.role === 'customer' &&  role!== loginUser?.role){
-     return res.status(404).json({
+     return res.status(403).json({
         success: false,
         message: "You can not change role"
       })
@@ -70,9 +69,7 @@ const updateUser = async (req: Request, res: Response) => {
 
     const result = await userService.updateUserIntoDB(name, email, phone, role, targetId as string)
 
-    // console.log('sdcasd',req.params.targetId)
-
-    if (result.rows.length === 0) {
+    if (!result) {
       return res.status(404).json({
         success: false,
         message: "User not found"
@@ -81,7 +78,8 @@ const updateUser = async (req: Request, res: Response) => {
     else {
       return res.status(200).json({
         success: true,
-        message: "User updated successfully"
+        message: "User updated successfully",
+        data:result.rows[0]
       })
     }
   }
