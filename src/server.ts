@@ -10,17 +10,19 @@ app.use(express.json()); //middle ware
 
 initDB()
 
-app.use('/api/v1/auth', authRoute )
-app.use('/api/v1/vehicles',vehicleRoute )
-app.use('/api/v1/users',userRoute )
-app.use('/api/v1/bookings', bookingRoute )
-
 app.get('/', (req:Request, res:Response)=>{
    res.status(200).json({
     message:"This is the root route",
     path:req.path
    })
 })
+
+app.use('/api/v1/auth', authRoute )
+app.use('/api/v1/vehicles',vehicleRoute )
+app.use('/api/v1/users',userRoute )
+app.use('/api/v1/bookings', bookingRoute )
+
+
 
 app.listen(5000,()=>{
     console.log("Assignment is running on post 5000")
