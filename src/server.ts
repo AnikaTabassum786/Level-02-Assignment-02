@@ -24,6 +24,8 @@ app.use('/api/v1/bookings', bookingRoute )
 
 
 
-app.listen(5000,()=>{
-    console.log("Assignment is running on post 5000")
-})
+// app.listen(5000,()=>{
+//     console.log("Assignment is running on post 5000")
+// })
+
+export default app
