@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs"
-import { pool } from "../../database/db"
+// import { pool } from "../../database/db"
 import jwt from "jsonwebtoken"
+import { pool } from "../../database/db.js";
 export  const secret = 'KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30';
 
 const signupUserIntoDB = async (payload: Record<string, unknown>) => {

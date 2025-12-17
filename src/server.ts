@@ -1,10 +1,21 @@
-import express, { Request, Response } from "express"
-import { authRoute } from "./modules/auth/auth.route"
-import { initDB } from "./database/db";
-import { vehicleRoute } from "./modules/vehicle/vehicle.route";
-import { userRoute } from "./modules/user/user.route";
-import { bookingRoute } from "./modules/booking/booking.router";
+// import express, { Request, Response } from "express"
+// import { authRoute } from "./modules/auth/auth.route"
+// import { initDB } from "./database/db";
+// import { vehicleRoute } from "./modules/vehicle/vehicle.route";
+// import { userRoute } from "./modules/user/user.route";
+// import { bookingRoute } from "./modules/booking/booking.router";
+// import { authRoute } from "./modules/auth/auth.route.js";
 
+import { initDB } from "./database/db.js";
+import { authRoute } from "./modules/auth/auth.route.js";
+import { bookingRoute } from "./modules/booking/booking.router.js";
+import { userRoute } from "./modules/user/user.route.js";
+import { vehicleRoute } from "./modules/vehicle/vehicle.route.js";
+
+
+
+
+import express, { Request, Response } from "express"
 const app = express()
 app.use(express.json()); //middle ware
 

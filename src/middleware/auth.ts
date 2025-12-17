@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import jwt ,{JwtPayload}from "jsonwebtoken"
-import { secret } from "../modules/auth/auth.service";
-import { pool } from "../database/db";
+import { pool } from "../database/db.js";
+import { secret } from "../modules/auth/auth.service.js";
+
+// import { secret } from "../modules/auth/auth.service";
+// import { pool } from "../database/db";
 
 const auth =(...roles:('admin'|'customer')[])=>{//const a = [1,2,3,4...] //{...a} this is rest operator
   

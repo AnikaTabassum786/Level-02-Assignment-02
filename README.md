@@ -57,5 +57,5 @@ Setup:
 
 
 GitHub Repository Link: https://github.com/AnikaTabassum786/Level-02-Assignment-02
-Live Deployment Link  : 
+Live Deployment Link  : https://assignment-2-g2ysuae3t-anika-tabassums-projects.vercel.app/
 

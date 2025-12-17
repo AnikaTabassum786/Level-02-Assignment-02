@@ -1,5 +1,6 @@
 import { isStatement } from "typescript";
-import { pool } from "../../database/db";
+import { pool } from "../../database/db.js";
+// import { pool } from "../../database/db";
 
 const createVehicleIntoDB = async (payload: Record<string, unknown>) => {
 

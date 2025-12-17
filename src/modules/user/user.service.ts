@@ -1,4 +1,6 @@
-import { pool } from "../../database/db"
+// import { pool } from "../../database/db"
+
+import { pool } from "../../database/db.js";
 
 const getAllUserFromDB = async () => {
     const result = await pool.query(`SELECT id,name,email,phone,role FROM users`)

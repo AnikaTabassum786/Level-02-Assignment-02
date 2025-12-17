@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
-import { userService } from "./user.service";
-import { Roles } from "../auth/auth.const";
+import { userService } from "./user.service.js";
+// import { userService } from "./user.service";
+// import { Roles } from "../auth/auth.const";
 
 const getAllUser = async (req: Request, res: Response) => {
     try {
